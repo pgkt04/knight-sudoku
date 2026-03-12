@@ -1,7 +1,7 @@
 // ── Core game hook ──
 // useReducer-based state management with undo/redo.
 
-import { useReducer, useCallback } from "react";
+import { useReducer, useCallback, useRef } from "react";
 import type { Board, Digit, Puzzle, Coord } from "../game/types";
 import { cloneBoard } from "../game/types";
 import { getConflicts, isBoardComplete } from "../game/validator";
@@ -178,40 +178,65 @@ export function useGame(puzzle: Puzzle) {
     [],
   );
 
-  // Derive conflict info for the selected cell
+  // Derive conflicts for ALL cells on the board (not just selected)
   const grid = boardToGrid(state.board);
-  const conflicts =
-    state.selectedCell &&
-    state.board[state.selectedCell.row]?.[state.selectedCell.col]?.value
-      ? getConflicts(grid, state.selectedCell.row, state.selectedCell.col)
-      : [];
-
-  // Find fully completed and correct rows/cols/boxes
-  const completedGroups: Coord[] = [];
-  // Check rows
+  const conflictSet = new Set<string>();
   for (let r = 0; r < 9; r++) {
-    if (isGroupComplete(state.solution, grid, "row", r)) {
-      for (let c = 0; c < 9; c++) completedGroups.push({ row: r, col: c });
-    }
-  }
-  // Check columns
-  for (let c = 0; c < 9; c++) {
-    if (isGroupComplete(state.solution, grid, "col", c)) {
-      for (let r = 0; r < 9; r++) completedGroups.push({ row: r, col: c });
-    }
-  }
-  // Check 3x3 boxes
-  for (let br = 0; br < 3; br++) {
-    for (let bc = 0; bc < 3; bc++) {
-      if (isGroupComplete(state.solution, grid, "box", br * 3 + bc)) {
-        for (let r = br * 3; r < br * 3 + 3; r++) {
-          for (let c = bc * 3; c < bc * 3 + 3; c++) {
-            completedGroups.push({ row: r, col: c });
-          }
+    for (let c = 0; c < 9; c++) {
+      if (grid[r]?.[c]) {
+        for (const coord of getConflicts(grid, r, c)) {
+          conflictSet.add(`${coord.row},${coord.col}`);
+          conflictSet.add(`${r},${c}`);
         }
       }
     }
   }
+  const conflicts: Coord[] = [...conflictSet].map((key) => {
+    const [row, col] = key.split(",").map(Number);
+    return { row: row!, col: col! };
+  });
+
+  // Find fully completed and correct rows/cols/boxes
+  // Track which groups are complete as string keys like "row-3", "col-5", "box-4"
+  const currentCompleted = new Set<string>();
+  for (let r = 0; r < 9; r++) {
+    if (isGroupComplete(state.solution, grid, "row", r)) {
+      currentCompleted.add(`row-${r}`);
+    }
+  }
+  for (let c = 0; c < 9; c++) {
+    if (isGroupComplete(state.solution, grid, "col", c)) {
+      currentCompleted.add(`col-${c}`);
+    }
+  }
+  for (let br = 0; br < 3; br++) {
+    for (let bc = 0; bc < 3; bc++) {
+      if (isGroupComplete(state.solution, grid, "box", br * 3 + bc)) {
+        currentCompleted.add(`box-${br * 3 + bc}`);
+      }
+    }
+  }
+
+  // Detect newly completed groups by comparing with previous state
+  const prevCompletedRef = useRef(new Set<string>());
+  const flashVersionRef = useRef<number[][]>(
+    Array.from({ length: 9 }, () => Array(9).fill(0) as number[]),
+  );
+
+  // Find groups that just became complete
+  for (const key of currentCompleted) {
+    if (!prevCompletedRef.current.has(key)) {
+      // This group just completed — bump flash version for its cells
+      const cells = getGroupCells(key);
+      for (const [r, c] of cells) {
+        flashVersionRef.current[r]![c]! += 1;
+      }
+    }
+  }
+  prevCompletedRef.current = currentCompleted;
+
+  // Build a snapshot of flash versions for rendering
+  const flashVersions = flashVersionRef.current.map((row) => [...row]);
 
   // Knight moves from selected cell (for visualization)
   const knightMoves = state.selectedCell
@@ -228,7 +253,7 @@ export function useGame(puzzle: Puzzle) {
     redo,
     newGame,
     conflicts,
-    completedGroups,
+    flashVersions,
     knightMoves,
   };
 }
@@ -268,4 +293,30 @@ function isGroupComplete(
     const v = grid[r]?.[c];
     return v !== 0 && v === solution[r]?.[c];
   });
+}
+
+/**
+ * Given a group key like "row-3", "col-5", "box-4",
+ * return the list of [row, col] coordinates in that group.
+ */
+function getGroupCells(key: string): [number, number][] {
+  const [type, indexStr] = key.split("-");
+  const index = Number(indexStr);
+  const cells: [number, number][] = [];
+
+  if (type === "row") {
+    for (let c = 0; c < 9; c++) cells.push([index, c]);
+  } else if (type === "col") {
+    for (let r = 0; r < 9; r++) cells.push([r, index]);
+  } else {
+    const br = Math.floor(index / 3) * 3;
+    const bc = (index % 3) * 3;
+    for (let r = br; r < br + 3; r++) {
+      for (let c = bc; c < bc + 3; c++) {
+        cells.push([r, c]);
+      }
+    }
+  }
+
+  return cells;
 }

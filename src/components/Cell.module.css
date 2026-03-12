@@ -52,17 +52,22 @@
   background: #fee2e2 !important;
 }
 
-/* Completed group flash (row/col/box correct) */
-.completed {
-  animation: greenFlash 1.5s ease-out;
+/* Green flash overlay — remounted via key to re-trigger animation */
+.flashOverlay {
+  position: absolute;
+  inset: 0;
+  background: #86efac;
+  pointer-events: none;
+  animation: flashFade 1.5s ease-out forwards;
+  z-index: 1;
 }
 
-@keyframes greenFlash {
+@keyframes flashFade {
   0% {
-    background: #86efac;
+    opacity: 0.8;
   }
   100% {
-    background: inherit;
+    opacity: 0;
   }
 }
 

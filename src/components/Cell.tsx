@@ -11,7 +11,7 @@ interface CellProps {
   highlighted: boolean;
   knightHighlight: boolean;
   conflict: boolean;
-  completed: boolean;
+  flashVersion: number;
   onClick: () => void;
 }
 
@@ -25,7 +25,7 @@ export function CellView({
   highlighted,
   knightHighlight,
   conflict,
-  completed,
+  flashVersion,
   onClick,
 }: CellProps) {
   const classNames = [
@@ -36,7 +36,6 @@ export function CellView({
     !selected && highlighted ? styles.highlighted : "",
     !selected && !highlighted && knightHighlight ? styles.knight : "",
     conflict ? styles.conflict : "",
-    completed ? styles.completed : "",
   ]
     .filter(Boolean)
     .join(" ");
@@ -54,6 +53,10 @@ export function CellView({
       type="button"
       style={{ borderRight, borderBottom }}
     >
+      {/* Flash overlay — key changes force remount, re-triggering animation */}
+      {flashVersion > 0 && (
+        <span key={flashVersion} className={styles.flashOverlay} />
+      )}
       {value ? (
         value
       ) : pencilMarks.size > 0 ? (

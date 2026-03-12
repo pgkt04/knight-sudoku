@@ -6,7 +6,7 @@ interface BoardProps {
   board: Board;
   selectedCell: Coord | null;
   conflicts: Coord[];
-  completedGroups: Coord[];
+  flashVersions: number[][];
   knightMoves: Coord[];
   onCellClick: (coord: Coord) => void;
 }
@@ -15,12 +15,11 @@ export function BoardView({
   board,
   selectedCell,
   conflicts,
-  completedGroups,
+  flashVersions,
   knightMoves,
   onCellClick,
 }: BoardProps) {
   const conflictSet = new Set(conflicts.map((c) => `${c.row},${c.col}`));
-  const completedSet = new Set(completedGroups.map((c) => `${c.row},${c.col}`));
   const knightSet = new Set(knightMoves.map((c) => `${c.row},${c.col}`));
 
   return (
@@ -50,7 +49,7 @@ export function BoardView({
               highlighted={isHighlighted}
               knightHighlight={knightSet.has(key)}
               conflict={conflictSet.has(key)}
-              completed={completedSet.has(key)}
+              flashVersion={flashVersions[r]?.[c] ?? 0}
               onClick={() => onCellClick({ row: r, col: c })}
             />
           );
