@@ -1,0 +1,14 @@
+.board {
+  display: grid;
+  grid-template-columns: repeat(9, 1fr);
+  grid-template-rows: repeat(9, 1fr);
+  gap: 0;
+  background: #fff;
+  border: 3px solid #1a1a2e;
+  width: min(90vw, 450px);
+  height: min(90vw, 450px);
+  user-select: none;
+  -webkit-user-select: none;
+  border-radius: 4px;
+  overflow: hidden;
+}

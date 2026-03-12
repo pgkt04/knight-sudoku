@@ -1,0 +1,8 @@
+.timer {
+  font-size: clamp(16px, 3vw, 20px);
+  font-weight: 500;
+  font-family: "SF Mono", "Menlo", monospace;
+  color: #6b7280;
+  text-align: center;
+  padding: 4px 0;
+}

@@ -1,0 +1,51 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100dvh;
+  padding: 24px;
+}
+
+.title {
+  font-size: clamp(28px, 6vw, 40px);
+  font-weight: 700;
+  color: #1a1a2e;
+  margin: 0 0 8px 0;
+}
+
+.subtitle {
+  font-size: clamp(14px, 3vw, 18px);
+  color: #6b7280;
+  text-align: center;
+  margin: 0 0 32px 0;
+  max-width: 320px;
+  line-height: 1.4;
+}
+
+.buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: min(80vw, 280px);
+}
+
+.diffButton {
+  padding: 14px 24px;
+  font-size: clamp(16px, 3.5vw, 20px);
+  font-weight: 600;
+  font-family: "SF Pro Display", system-ui, -apple-system, sans-serif;
+  background: #f3f4f6;
+  border: 2px solid #d1d5db;
+  border-radius: 12px;
+  color: #1f2937;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color 0.1s ease, transform 0.05s ease;
+  min-height: 48px;
+}
+
+.diffButton:active {
+  background: #dbeafe;
+  transform: scale(0.97);
+}

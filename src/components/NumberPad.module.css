@@ -1,0 +1,30 @@
+.numberPad {
+  display: grid;
+  grid-template-columns: repeat(9, 1fr);
+  gap: 6px;
+  width: min(90vw, 450px);
+  margin-top: 16px;
+}
+
+.numButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f3f4f6;
+  border: 2px solid #d1d5db;
+  border-radius: 8px;
+  font-size: clamp(18px, 4vw, 24px);
+  font-weight: 600;
+  font-family: "SF Pro Display", system-ui, -apple-system, sans-serif;
+  color: #1f2937;
+  cursor: pointer;
+  padding: 10px 0;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color 0.1s ease, transform 0.05s ease;
+  min-height: 44px;
+}
+
+.numButton:active {
+  background: #dbeafe;
+  transform: scale(0.95);
+}

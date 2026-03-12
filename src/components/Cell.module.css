@@ -1,0 +1,72 @@
+.cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  font-size: clamp(16px, 4vw, 28px);
+  font-weight: 500;
+  cursor: pointer;
+  position: relative;
+  -webkit-tap-highlight-color: transparent;
+  border: none;
+  padding: 0;
+  outline: none;
+  font-family: "SF Pro Display", system-ui, -apple-system, sans-serif;
+  transition: background-color 0.1s ease;
+}
+
+.cell:active {
+  background: #e0e0e0;
+}
+
+/* Given cells (clues) */
+.given {
+  font-weight: 700;
+  color: #1a1a2e;
+  background: #f0f0f5;
+}
+
+/* Player-entered value */
+.player {
+  color: #2563eb;
+}
+
+/* Currently selected cell */
+.selected {
+  background: #bfdbfe !important;
+}
+
+/* Same row/col/box as selected */
+.highlighted {
+  background: #e8f0fe;
+}
+
+/* Knight-move highlight */
+.knight {
+  background: #fef3c7;
+}
+
+/* Conflict (error) */
+.conflict {
+  color: #dc2626;
+  background: #fee2e2 !important;
+}
+
+/* Pencil marks container */
+.pencilMarks {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  width: 100%;
+  height: 100%;
+  padding: 1px;
+}
+
+.pencilDigit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(7px, 1.5vw, 10px);
+  color: #6b7280;
+  line-height: 1;
+}
