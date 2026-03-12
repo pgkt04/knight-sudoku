@@ -11,6 +11,7 @@ interface CellProps {
   highlighted: boolean;
   knightHighlight: boolean;
   conflict: boolean;
+  completed: boolean;
   onClick: () => void;
 }
 
@@ -24,6 +25,7 @@ export function CellView({
   highlighted,
   knightHighlight,
   conflict,
+  completed,
   onClick,
 }: CellProps) {
   const classNames = [
@@ -34,6 +36,7 @@ export function CellView({
     !selected && highlighted ? styles.highlighted : "",
     !selected && !highlighted && knightHighlight ? styles.knight : "",
     conflict ? styles.conflict : "",
+    completed ? styles.completed : "",
   ]
     .filter(Boolean)
     .join(" ");

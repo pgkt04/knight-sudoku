@@ -104,6 +104,7 @@ function GameScreen({
     undo,
     redo,
     conflicts,
+    completedGroups,
     knightMoves,
   } = useGame(puzzle);
 
@@ -143,6 +144,7 @@ function GameScreen({
         board={state.board}
         selectedCell={state.selectedCell}
         conflicts={conflicts}
+        completedGroups={completedGroups}
         knightMoves={knightMoves}
         onCellClick={selectCell}
       />

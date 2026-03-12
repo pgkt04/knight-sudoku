@@ -186,6 +186,33 @@ export function useGame(puzzle: Puzzle) {
       ? getConflicts(grid, state.selectedCell.row, state.selectedCell.col)
       : [];
 
+  // Find fully completed and correct rows/cols/boxes
+  const completedGroups: Coord[] = [];
+  // Check rows
+  for (let r = 0; r < 9; r++) {
+    if (isGroupComplete(state.solution, grid, "row", r)) {
+      for (let c = 0; c < 9; c++) completedGroups.push({ row: r, col: c });
+    }
+  }
+  // Check columns
+  for (let c = 0; c < 9; c++) {
+    if (isGroupComplete(state.solution, grid, "col", c)) {
+      for (let r = 0; r < 9; r++) completedGroups.push({ row: r, col: c });
+    }
+  }
+  // Check 3x3 boxes
+  for (let br = 0; br < 3; br++) {
+    for (let bc = 0; bc < 3; bc++) {
+      if (isGroupComplete(state.solution, grid, "box", br * 3 + bc)) {
+        for (let r = br * 3; r < br * 3 + 3; r++) {
+          for (let c = bc * 3; c < bc * 3 + 3; c++) {
+            completedGroups.push({ row: r, col: c });
+          }
+        }
+      }
+    }
+  }
+
   // Knight moves from selected cell (for visualization)
   const knightMoves = state.selectedCell
     ? getKnightMoves(state.selectedCell.row, state.selectedCell.col)
@@ -201,6 +228,7 @@ export function useGame(puzzle: Puzzle) {
     redo,
     newGame,
     conflicts,
+    completedGroups,
     knightMoves,
   };
 }
@@ -209,4 +237,35 @@ export function useGame(puzzle: Puzzle) {
 
 function boardToGrid(board: Board): number[][] {
   return board.map((row) => row.map((cell) => cell.value));
+}
+
+/**
+ * Check if a row/col/box is fully filled AND matches the solution.
+ */
+function isGroupComplete(
+  solution: number[][],
+  grid: number[][],
+  type: "row" | "col" | "box",
+  index: number,
+): boolean {
+  const cells: [number, number][] = [];
+
+  if (type === "row") {
+    for (let c = 0; c < 9; c++) cells.push([index, c]);
+  } else if (type === "col") {
+    for (let r = 0; r < 9; r++) cells.push([r, index]);
+  } else {
+    const br = Math.floor(index / 3) * 3;
+    const bc = (index % 3) * 3;
+    for (let r = br; r < br + 3; r++) {
+      for (let c = bc; c < bc + 3; c++) {
+        cells.push([r, c]);
+      }
+    }
+  }
+
+  return cells.every(([r, c]) => {
+    const v = grid[r]?.[c];
+    return v !== 0 && v === solution[r]?.[c];
+  });
 }

@@ -52,6 +52,20 @@
   background: #fee2e2 !important;
 }
 
+/* Completed group flash (row/col/box correct) */
+.completed {
+  animation: greenFlash 1.5s ease-out;
+}
+
+@keyframes greenFlash {
+  0% {
+    background: #86efac;
+  }
+  100% {
+    background: inherit;
+  }
+}
+
 /* Pencil marks container */
 .pencilMarks {
   display: grid;

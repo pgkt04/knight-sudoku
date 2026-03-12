@@ -139,4 +139,10 @@ for (let stars = 1; stars <= 10; stars++) {
   }
 }
 
-console.log(JSON.stringify(allPuzzles, null, 2));
+// Compact JSON: grids as single-line arrays
+const output = "[\n" + allPuzzles.map(p => {
+  const gridStr = "[" + p.grid.map(r => JSON.stringify(r)).join(",") + "]";
+  const solStr = "[" + p.solution.map(r => JSON.stringify(r)).join(",") + "]";
+  return `  {"id":${p.id},"stars":${p.stars},"givens":${p.givens},"grid":${gridStr},"solution":${solStr}}`;
+}).join(",\n") + "\n]";
+console.log(output);
