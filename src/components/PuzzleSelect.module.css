@@ -2,9 +2,13 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-height: 100dvh;
+  justify-content: center;
+  height: 100dvh;
   padding: 24px 16px;
   padding-top: calc(env(safe-area-inset-top, 24px) + 12px);
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .title {
@@ -18,55 +22,91 @@
   font-size: clamp(13px, 2.8vw, 16px);
   color: #6b7280;
   text-align: center;
-  margin: 0 0 24px 0;
+  margin: 0 0 20px 0;
   max-width: 320px;
   line-height: 1.4;
 }
 
-.list {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+/* Wheel viewport */
+.wheel {
+  position: relative;
   width: min(90vw, 400px);
-  overflow-y: auto;
-  flex: 1;
-  padding-bottom: 24px;
+  height: 360px;
+  overflow: hidden;
+  cursor: grab;
+  touch-action: none;
 }
 
+.wheel:active {
+  cursor: grabbing;
+}
+
+.wheelInner {
+  position: absolute;
+  top: 144px; /* center offset: (360 - 72) / 2 */
+  left: 0;
+  right: 0;
+  will-change: transform;
+}
+
+/* Fade edges */
+.fadeTop,
+.fadeBottom {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 80px;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.fadeTop {
+  top: 0;
+  background: linear-gradient(to bottom, #fafafa 0%, transparent 100%);
+}
+
+.fadeBottom {
+  bottom: 0;
+  background: linear-gradient(to top, #fafafa 0%, transparent 100%);
+}
+
+/* Puzzle row */
 .puzzleRow {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 12px 16px;
+  padding: 0 16px;
   background: #fff;
   border: 2px solid #e5e7eb;
   border-radius: 12px;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
-  transition: background-color 0.1s ease, transform 0.05s ease;
-  min-height: 56px;
+  transition: transform 0.05s ease, opacity 0.05s ease, border-color 0.2s ease, background-color 0.2s ease;
   font-family: "SF Pro Display", system-ui, -apple-system, sans-serif;
+  width: 100%;
+  box-sizing: border-box;
 }
 
-.puzzleRow:active {
+.centered {
+  border-color: #2563eb;
   background: #f0f4ff;
-  transform: scale(0.98);
 }
 
 .locked {
-  opacity: 0.45;
   cursor: default;
-  background: #f9fafb;
 }
 
-.locked:active {
-  background: #f9fafb;
-  transform: none;
+.locked .puzzleName {
+  color: #9ca3af;
 }
 
 .completedRow {
   border-color: #86efac;
   background: #f0fdf4;
+}
+
+.completedRow.centered {
+  border-color: #22c55e;
 }
 
 .puzzleInfo {
@@ -80,12 +120,14 @@
   font-size: clamp(15px, 3.2vw, 17px);
   font-weight: 600;
   color: #1a1a2e;
+  text-align: left;
 }
 
 .stars {
-  font-size: clamp(12px, 2.5vw, 14px);
+  font-size: clamp(11px, 2.2vw, 13px);
   color: #f59e0b;
   letter-spacing: 1px;
+  text-align: left;
 }
 
 .lockIcon {
@@ -94,6 +136,29 @@
 }
 
 .checkIcon {
-  font-size: 18px;
+  font-size: 20px;
   color: #22c55e;
+  font-weight: 700;
+}
+
+/* Play button below the wheel */
+.playButton {
+  margin-top: 20px;
+  padding: 12px 48px;
+  font-size: clamp(16px, 3.5vw, 20px);
+  font-weight: 600;
+  font-family: "SF Pro Display", system-ui, -apple-system, sans-serif;
+  background: #2563eb;
+  border: none;
+  border-radius: 12px;
+  color: #fff;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color 0.1s ease, transform 0.05s ease;
+  min-height: 48px;
+}
+
+.playButton:active {
+  background: #1d4ed8;
+  transform: scale(0.97);
 }
