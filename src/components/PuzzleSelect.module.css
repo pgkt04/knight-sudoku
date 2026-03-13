@@ -70,6 +70,31 @@
   background: linear-gradient(to top, #fafafa 0%, transparent 100%);
 }
 
+/* Skip to latest button */
+.skipButton {
+  margin-top: 12px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid #d1d5db;
+  background: #fff;
+  color: #2563eb;
+  font-size: 20px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color 0.1s ease, transform 0.1s ease, opacity 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.skipButton:active {
+  background: #f0f4ff;
+  transform: scale(0.9);
+}
+
 /* Puzzle row */
 .puzzleRow {
   display: flex;

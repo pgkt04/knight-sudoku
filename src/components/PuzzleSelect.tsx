@@ -15,13 +15,16 @@ export function PuzzleSelect({
   isCompleted,
   isUnlocked,
 }: PuzzleSelectProps) {
-  // Find the first unlocked-but-not-completed puzzle as initial center
-  const initialIndex = Math.max(
-    0,
-    ALL_PUZZLES.findIndex((p) => isUnlocked(p.id) && !isCompleted(p.id)),
-  );
+  // Find the last unlocked puzzle as initial center
+  const lastUnlockedIndex = (() => {
+    let last = 0;
+    for (let i = 0; i < ALL_PUZZLES.length; i++) {
+      if (isUnlocked(ALL_PUZZLES[i]!.id)) last = i;
+    }
+    return last;
+  })();
 
-  const [offset, setOffset] = useState(-initialIndex * ITEM_HEIGHT);
+  const [offset, setOffset] = useState(-lastUnlockedIndex * ITEM_HEIGHT);
   const dragRef = useRef({
     dragging: false,
     startY: 0,
@@ -175,6 +178,14 @@ export function PuzzleSelect({
   // The centered item index
   const centeredIndex = Math.round(-offset / ITEM_HEIGHT);
 
+  // Skip to last unlocked
+  const handleSkipToLatest = useCallback(() => {
+    if (animRef.current) cancelAnimationFrame(animRef.current);
+    snapTo(-lastUnlockedIndex * ITEM_HEIGHT, 0);
+  }, [lastUnlockedIndex, snapTo]);
+
+  const isAtLatest = centeredIndex === lastUnlockedIndex;
+
   return (
     <div className={styles.container}>
       <h1 className={styles.title}>Knight Sudoku</h1>
@@ -258,6 +269,18 @@ export function PuzzleSelect({
         <div className={styles.fadeTop} />
         <div className={styles.fadeBottom} />
       </div>
+
+      {/* Skip to latest unlocked — hidden when already there */}
+      {!isAtLatest && (
+        <button
+          className={styles.skipButton}
+          onClick={handleSkipToLatest}
+          type="button"
+          aria-label="Skip to latest unlocked puzzle"
+        >
+          {centeredIndex < lastUnlockedIndex ? "↓" : "↑"}
+        </button>
+      )}
 
       {/* Play button for centered item */}
       {isUnlocked(ALL_PUZZLES[centeredIndex]?.id ?? 1) && (
